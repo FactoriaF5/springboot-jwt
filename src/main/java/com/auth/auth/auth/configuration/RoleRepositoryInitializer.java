@@ -5,9 +5,7 @@ import com.auth.auth.models.Role;
 import com.auth.auth.models.User;
 import com.auth.auth.repositories.RoleRepository;
 
-import com.auth.auth.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
+import com.auth.auth.repositories.AuthRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -19,12 +17,12 @@ import java.util.stream.Collectors;
 public class RoleRepositoryInitializer {
 
     private RoleRepository roleRepository;
-    private UserRepository userRepository;
+    private AuthRepository authRepository;
     private PasswordEncoder encoder;
 
-    public RoleRepositoryInitializer(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder encoder) {
+    public RoleRepositoryInitializer(RoleRepository roleRepository, AuthRepository authRepository, PasswordEncoder encoder) {
         this.roleRepository = roleRepository;
-        this.userRepository = userRepository;
+        this.authRepository = authRepository;
         this.encoder = encoder;
     }
 
@@ -42,7 +40,7 @@ public class RoleRepositoryInitializer {
 
         roleRepository.saveAll(roles);
 
-        if (!userRepository.findAll().isEmpty()) {
+        if (!authRepository.findAll().isEmpty()) {
             return;
         }
 
@@ -52,6 +50,6 @@ public class RoleRepositoryInitializer {
         user.setUsername("Admin");
         user.setPassword(encoder.encode("12345678"));
 
-        userRepository.save(user);
+        authRepository.save(user);
     }
 }

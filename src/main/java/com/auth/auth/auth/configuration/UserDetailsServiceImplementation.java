@@ -2,7 +2,7 @@ package com.auth.auth.auth.configuration;
 
 
 import com.auth.auth.models.User;
-import com.auth.auth.repositories.UserRepository;
+import com.auth.auth.repositories.AuthRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,17 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserDetailsServiceImplementation implements UserDetailsService {
 
-    UserRepository userRepository;
+    AuthRepository authRepository;
 
     @Autowired
-    public UserDetailsServiceImplementation(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserDetailsServiceImplementation(AuthRepository authRepository) {
+        this.authRepository = authRepository;
     }
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
+        User user = authRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
         return UserDetailsImplementation.build(user);

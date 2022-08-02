@@ -5,7 +5,7 @@ import com.auth.auth.auth.configuration.UserDetailsImplementation;
 import com.auth.auth.models.Role;
 import com.auth.auth.models.User;
 import com.auth.auth.repositories.RoleRepository;
-import com.auth.auth.repositories.UserRepository;
+import com.auth.auth.repositories.AuthRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-    private final UserRepository userRepository;
+    private final AuthRepository authRepository;
 
     private final RoleRepository roleRepository;
 
@@ -41,8 +41,8 @@ public class AuthenticationController {
     private final JwtUtils jwtUtils;
 
     @Autowired
-    public AuthenticationController(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
-        this.userRepository = userRepository;
+    public AuthenticationController(AuthRepository authRepository, RoleRepository roleRepository, PasswordEncoder encoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+        this.authRepository = authRepository;
         this.roleRepository = roleRepository;
         this.encoder = encoder;
         this.authenticationManager = authenticationManager;
@@ -76,13 +76,13 @@ public class AuthenticationController {
 //            return new ResponseEntity(HttpStatus.FORBIDDEN);
 //        }
 
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+        if (authRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (authRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
@@ -123,12 +123,12 @@ public class AuthenticationController {
         }
 
         user.setRoles(roles);
-        userRepository.save(user);
+        authRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
     private boolean someUserAlreadyExist() {
-        return !userRepository.findAll().isEmpty();
+        return !authRepository.findAll().isEmpty();
     }
 }
